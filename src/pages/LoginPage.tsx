@@ -1,6 +1,16 @@
+import { useNavigate } from 'react-router-dom';
+
 export default function LoginPage() {
+  const navigate = useNavigate();
+
   const handleKakaoLogin = () => {
     window.location.href = process.env.REACT_APP_KAKAO_LOGIN_URL!;
+  };
+
+  const handleDevLogin = () => {
+    localStorage.setItem('access_token', 'dev-access-token');
+    localStorage.setItem('refresh_token', 'dev-refresh-token');
+    navigate('/home');
   };
 
   return (
@@ -13,6 +23,14 @@ export default function LoginPage() {
       >
         카카오로 시작하기
       </button>
+      {process.env.NODE_ENV === 'development' && (
+        <button
+          onClick={handleDevLogin}
+          className="mt-4 text-sm text-gray-400 underline"
+        >
+          [개발] 로그인 건너뛰기
+        </button>
+      )}
     </div>
   );
 }
