@@ -11,6 +11,7 @@ interface Routine {
   id: number;
   title: string;
   description: string;
+  isPublic: boolean;
   items: Item[];
 }
 
@@ -19,7 +20,7 @@ export default function RoutineDetailPage() {
   const navigate = useNavigate();
   const [routine, setRoutine] = useState<Routine | null>(null);
   const [editing, setEditing] = useState(false);
-  const [form, setForm] = useState({ title: '', description: '', items: [] as Item[] });
+  const [form, setForm] = useState({ title: '', description: '', isPublic: false, items: [] as Item[] });
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -28,7 +29,7 @@ export default function RoutineDetailPage() {
       .then((res) => {
         const data: Routine = res.data.data;
         setRoutine(data);
-        setForm({ title: data.title, description: data.description, items: data.items });
+        setForm({ title: data.title, description: data.description, isPublic: data.isPublic, items: data.items });
       })
       .catch(() => setError('루틴을 불러오지 못했습니다.'));
   }, [id]);
@@ -118,6 +119,11 @@ export default function RoutineDetailPage() {
       <main className="p-4 max-w-lg mx-auto">
         {!editing ? (
           <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${routine.isPublic ? 'bg-indigo-100 text-indigo-600' : 'bg-gray-100 text-gray-500'}`}>
+                {routine.isPublic ? '공개' : '비공개'}
+              </span>
+            </div>
             {routine.description && (
               <p className="text-gray-600 text-sm">{routine.description}</p>
             )}
@@ -150,6 +156,19 @@ export default function RoutineDetailPage() {
                 onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
               />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium">공개 루틴</label>
+              <button
+                type="button"
+                onClick={() => setForm((f) => ({ ...f, isPublic: !f.isPublic }))}
+                className={`relative w-11 h-6 rounded-full transition-colors ${form.isPublic ? 'bg-indigo-600' : 'bg-gray-300'}`}
+              >
+                <span
+                  className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${form.isPublic ? 'translate-x-5' : 'translate-x-0'}`}
+                />
+              </button>
             </div>
 
             <div>
@@ -202,7 +221,7 @@ export default function RoutineDetailPage() {
                 onClick={() => {
                   setEditing(false);
                   setError('');
-                  setForm({ title: routine.title, description: routine.description, items: routine.items });
+                  setForm({ title: routine.title, description: routine.description, isPublic: routine.isPublic, items: routine.items });
                 }}
                 className="flex-1 py-3 border border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50"
               >

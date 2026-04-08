@@ -11,6 +11,7 @@ export default function RoutineCreatePage() {
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [isPublic, setIsPublic] = useState(false);
   const [items, setItems] = useState<Item[]>([{ title: '', durationMinutes: 10 }]);
   const [error, setError] = useState('');
 
@@ -34,7 +35,7 @@ export default function RoutineCreatePage() {
     }
     const validItems = items.filter((item) => item.title.trim());
     try {
-      await api.post('/api/routines', { title, description, items: validItems });
+      await api.post('/api/routines', { title, description, isPublic, items: validItems });
       navigate('/home');
     } catch {
       setError('루틴 생성에 실패했습니다. 다시 시도해 주세요.');
@@ -72,6 +73,19 @@ export default function RoutineCreatePage() {
               placeholder="간단한 설명"
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
             />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <label className="text-sm font-medium">공개 루틴</label>
+            <button
+              type="button"
+              onClick={() => setIsPublic((prev) => !prev)}
+              className={`relative w-11 h-6 rounded-full transition-colors ${isPublic ? 'bg-indigo-600' : 'bg-gray-300'}`}
+            >
+              <span
+                className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${isPublic ? 'translate-x-5' : 'translate-x-0'}`}
+              />
+            </button>
           </div>
 
           <div>
